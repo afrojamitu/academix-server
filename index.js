@@ -27,6 +27,7 @@ async function run() {
 
     const collegeCollection = client.db('academixDB').collection('collegeData')
     const userCollection = client.db('academixDB').collection('users')
+    const applicationCollection = client.db('academixDB').collection('applications')
 
 
     // all college data
@@ -51,6 +52,7 @@ async function run() {
         res.send(result);
     })
 
+    // set users to db
     app.post('/users', async (req, res) => {
       const user = req.body;
       const query = { email: user.email }
@@ -62,10 +64,28 @@ async function run() {
       res.send(result)
     })
 
+    // get users from db
     app.get('/users', async (req, res) => {
       const result = await userCollection.find().toArray();
       res.send(result);
     })
+
+    // admission form - add data to db
+     app.post('/addApplication', async (req, res) => {
+      const application = req.body;
+      const result = await applicationCollection.insertOne(application);
+      res.send(result);
+    })
+
+    // get application data from db
+    app.get('/addApplication', async (req, res) => {
+      let query = {}
+      if (req.query?.email) {
+          query = { email: req.query.email }
+      }
+      const result = await applicationCollection.find(query).toArray()
+      res.send(result)
+    });
 
 
     // Send a ping to confirm a successful connection
