@@ -26,19 +26,45 @@ async function run() {
     // await client.connect();
 
     const collegeCollection = client.db('academixDB').collection('collegeData')
+    const userCollection = client.db('academixDB').collection('users')
 
 
+    // all college data
     app.get('/colleges', async (req, res) => {
         const result = await collegeCollection.find().toArray();
         res.send(result);
     })
 
-
+    // college data by id
     app.get('/colleges/:id', async(req, res)=>{
         const id = req.params.id;
         const query = { _id: new ObjectId(id)}
         const result = await collegeCollection.findOne(query)
         res.send(result);
+    })
+
+    // admission form by id
+    app.get('/admission/:id', async(req, res)=>{
+        const id = req.params.id;
+        const query = { _id: new ObjectId(id)}
+        const result = await collegeCollection.findOne(query)
+        res.send(result);
+    })
+
+    app.post('/users', async (req, res) => {
+      const user = req.body;
+      const query = { email: user.email }
+      const existingUser = await userCollection.findOne(query);
+      if (existingUser) {
+        return res.send({ message: 'User Already Exist' })
+      }
+      const result = await userCollection.insertOne(user);
+      res.send(result)
+    })
+
+    app.get('/users', async (req, res) => {
+      const result = await userCollection.find().toArray();
+      res.send(result);
     })
 
 
